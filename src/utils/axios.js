@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import router from '@/router/index'
+import router from '../router/index'
 import { localGet } from './index'
 import config from '~/config'
 
