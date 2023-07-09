@@ -69,11 +69,11 @@ const router = createRouter({
       name: 'order',
       component: () => import(/* webpackChunkName: "order" */ '../views/Order.vue')
     },
-    // {
-    //   path: '/order_detail',
-    //   name: 'order_detail',
-    //   component: () => import(/* webpackChunkName: "order_detail" */ '../views/OrderDetail.vue')
-    // },
+    {
+      path: '/order_detail',
+      name: 'order_detail',
+      component: () => import(/* webpackChunkName: "order_detail" */ '../views/OrderDetail.vue')
+    },
     {
       path: '/account',
       name: 'account',

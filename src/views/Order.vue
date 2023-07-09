@@ -39,111 +39,110 @@
             @confirm="handleCheckFinish"
         >
           <template #reference>
-            <el-button type="primary" size="small" icon="el-icon-check">确认完成</el-button>
+            <el-button  type="primary" size="small" icon="el-icon-check">确认完成</el-button>
           </template>
         </el-popconfirm>
       </div>
     </template>
+    <el-table
+        border
+        v-slot="{row}"
+        v-loading="loading"
+        ref="multipleTable"
+        :data="tableData"
+        tooltip-effect="dark"
+        style="width: 100% "
+        @selection-change="handleSelectionChange">
+      <el-table-column
+          type="selection"
+          width="55"
+      >
+      </el-table-column>
+      <el-table-column
+          prop="orderId"
+          label="ID"
+          width="50">
+      </el-table-column>
+      <el-table-column
+          prop="orderNo"
+          label="订单号"
+          width="200">
+      </el-table-column>
+      <el-table-column
+          prop="userId"
+          label="用户 ID"
+          width="80">
+      </el-table-column>
+      <el-table-column
+          prop="totalPrice"
+          label="订单总额"
+          width="100">
+      </el-table-column>
+      <el-table-column
+          prop="payType"
+          label="支付方式"
+          width="100">
+        <template v-slot="{row}">
+          <span v-if="row.payType===0">无</span>
+          <span v-else-if="row.payType===1">支付宝支付</span>
+          <span v-else-if="row.payType===2">微信支付</span>
+          <span v-else>未知类型</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="payStatus"
+          label="支付状态"
+          width="100">
+        <template v-slot="{row}">
+          <span v-if="row.payStatus===0">未支付</span>
+          <span v-else-if="row.payStatus===1">支付成功</span>
+          <span v-else-if="row.payStatus===-1">支付失败</span>
+          <span v-else>未知状态</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="payTime"
+          label="支付时间"
+          width="150">
+      </el-table-column>
+      <el-table-column
+          prop="orderStatus"
+          label="订单状态"
+          width="100">
+        <template v-slot="{ row }">
+          <span v-if="row.orderStatus===0">待支付</span>
+          <span v-else-if="row.orderStatus===1">已支付</span>
+          <span v-else-if="row.orderStatus===2">配货完成</span>
+          <span v-else-if="row.orderStatus===3">出库成功</span>
+          <span v-else-if="row.orderStatus===4">交易成功</span>
+          <span v-else-if="row.orderStatus===-1">手动关闭</span>
+          <span v-else-if="row.orderStatus===-2">超时关闭</span>
+          <span v-else-if="row.orderStatus===-3">商家关闭</span>
+          <span v-else>未知状态</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          label="其他信息"
+          width="110">
+        <template v-slot="{row}">
 
-  <el-table
-      border
-      v-slot="{row}"
-      v-loading="loading"
-      ref="multipleTable"
-      :data="tableData"
-      tooltip-effect="dark"
-      style="width: 100% "
-      @selection-change="handleSelectionChange">
-    <el-table-column
-        type="selection"
-        width="55"
-    >
-    </el-table-column>
-    <el-table-column
-        prop="orderId"
-        label="ID"
-        width="50">
-    </el-table-column>
-    <el-table-column
-        prop="orderNo"
-        label="订单号"
-        width="200">
-    </el-table-column>
-    <el-table-column
-        prop="userId"
-        label="用户 ID"
-        width="80">
-    </el-table-column>
-    <el-table-column
-        prop="totalPrice"
-        label="订单总额"
-        width="100">
-    </el-table-column>
-    <el-table-column
-        prop="payType"
-        label="支付方式"
-        width="100">
-      <template v-slot="{row}">
-        <span v-if="row.payType===0">无</span>
-        <span v-else-if="row.payType===1">支付宝支付</span>
-        <span v-else-if="row.payType===2">微信支付</span>
-        <span v-else>未知类型</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="payStatus"
-        label="支付状态"
-        width="100">
-      <template v-slot="{row}">
-        <span v-if="row.payStatus===0">未支付</span>
-        <span v-else-if="row.payStatus===1">支付成功</span>
-        <span v-else-if="row.payStatus===-1">支付失败</span>
-        <span v-else>未知状态</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="payTime"
-        label="支付时间"
-        width="150">
-    </el-table-column>
-    <el-table-column
-        prop="orderStatus"
-        label="订单状态"
-        width="100">
-      <template v-slot="{ row }">
-        <span v-if="row.orderStatus===0">待支付</span>
-        <span v-else-if="row.orderStatus===1" >已支付</span>
-        <span v-else-if="row.orderStatus===2" >配货完成</span>
-        <span v-else-if="row.orderStatus===3" >出库成功</span>
-        <span v-else-if="row.orderStatus===4" >交易成功</span>
-        <span v-else-if="row.orderStatus===-1" >手动关闭</span>
-        <span v-else-if="row.orderStatus===-2" >超时关闭</span>
-        <span v-else-if="row.orderStatus===-3" >商家关闭</span>
-        <span v-else>未知状态</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="extraInfo"
-        label="其他信息"
-        width="100">
-      <template v-slot="{row}">
-        <span v-if="row.extraInfo!==''">{{ row.extraInfo }}</span>
-        <span v-else>暂无</span>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="createTime"
-        label="创建时间"
-        width="150">
-    </el-table-column>
-    <el-table-column
-        prop="updateTime"
-        label="更新时间"
-        width="150">
-    </el-table-column>
-  </el-table>
+          <el-button type="info" round @click="handleEdit(row.orderId)">查看详情</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="createTime"
+          label="创建时间"
+          width="150">
+      </el-table-column>
+      <el-table-column
+          prop="updateTime"
+          label="更新时间"
+          width="150">
+      </el-table-column>
+    </el-table>
 
-<!--    总数超过一页，再展示分页器-->
+
+    <!--    总数超过一页，再展示分页器-->
     <el-pagination
         background
         layout="prev, pager, next"
@@ -153,17 +152,25 @@
         @current-change="changePage"
     />
   </el-card>
+<!--  <OrderDetail :order-id="currOrderId"/>-->
 </template>
 
 <script>
 import {onMounted, reactive, ref, toRefs, computed} from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from "../utils/axios";
+import router from "../router";
+// import OrderDetail from '../views/OrderDetail'
+
 
 export default {
   name: 'Order',
+  components:{
+    // OrderDetail
+  },
+
   setup() {
+    const currOrderId = ref(null);
     const state = reactive({
       loading: false,
       tableData: [], // 数据列表
@@ -172,17 +179,6 @@ export default {
       pageSize: 10, // 分页大小
       orderNo: "",
       orderStatus:null,
-      // Order :{
-      //   id: number,
-      //   orgerNo:string,
-      //   userId:number,
-      //   totalPrice:number,
-      //   payStatus:number,
-      //   payType:number,
-      //   payTime:string,
-      //   orderStatus:number,
-      //   extraInfo:string
-      // }
     })
     onMounted(() => {
       getOrderList()
@@ -193,12 +189,19 @@ export default {
     }
     const search = ref('')
     const searchData = computed(() =>
-        tableData.filter(
+        state.tableData.filter(
             (data) =>
                 !search.value ||
                 data.name.toLowerCase().includes(search.value.toLowerCase())
         )
     )
+
+    //查看详情
+    const handleEdit=(orderId)=>{
+      currOrderId.value=orderId
+      console.log("orderId:"+orderId)
+      router.push({path:'/order_detail',query: {orderId:orderId}})
+    }
 
     // 批量删除
     const handleDelete = () => {
@@ -330,6 +333,8 @@ export default {
       handleCheckClose,
       handleCheckOut,
       handleCheckFinish,
+      handleEdit,
+      // currOrderId
       // handleNext
     }
   }
@@ -343,5 +348,11 @@ export default {
 }
 .el-card.is-always-shadow {
   min-height: 100%!important;
+}
+.el-link {
+  margin-right: 8px;
+}
+.el-link .el-icon--right.el-icon {
+  vertical-align: text-bottom;
 }
 </style>

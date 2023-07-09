@@ -66,7 +66,7 @@ export default {
         state.categoryLevel = res.categoryLevel
       })
     }
-    // 开启弹窗
+    // 开启弹窗open
     const open = (id) => {
       state.visible = true
       if (id) {
