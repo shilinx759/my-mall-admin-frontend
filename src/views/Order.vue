@@ -34,11 +34,20 @@
             <el-button type="danger" size="small" icon="el-icon-error">关闭订单</el-button>
           </template>
         </el-popconfirm>
+        <el-popconfirm
+            title="确认完成吗？"
+            @confirm="handleCheckFinish"
+        >
+          <template #reference>
+            <el-button type="primary" size="small" icon="el-icon-check">确认完成</el-button>
+          </template>
+        </el-popconfirm>
       </div>
     </template>
 
   <el-table
       border
+      v-slot="{row}"
       v-loading="loading"
       ref="multipleTable"
       :data="tableData"
@@ -147,11 +156,9 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, reactive, ref, toRefs,computed  } from 'vue'
+import {onMounted, reactive, ref, toRefs, computed} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import DialogAddCategory from '@/components/DialogAddCategory.vue'
-// import axios from '@/utils/axios'
 import axios from "../utils/axios";
 
 export default {
@@ -193,18 +200,14 @@ export default {
         )
     )
 
-
-
     // 批量删除
     const handleDelete = () => {
       if (!state.multipleSelection.length) {
         ElMessage.error('请选择项')
         return
       }
-      axios.delete('/orders', {
-        data: {
-          orderId: state.multipleSelection.map(i => i.orderId)
-        }
+      axios.put('/orders/deleteOrder', {
+          ids: state.multipleSelection.map(i => i.orderId)
       }).then(() => {
         ElMessage.success('删除成功')
         getOrderList()
@@ -259,6 +262,22 @@ export default {
       })
     }
 
+    // 批量完成
+    const handleCheckFinish = () => {
+      if (!state.multipleSelection.length) {
+        ElMessage.error('请选择项')
+        return
+      }
+//向后端 /order/checkDown 发送一个PUT请求，请求体包括一个对象data，其中一个属性是
+      //ids,是从state的multipleSelection属性中取出的记录中的 orderId属性所组成的数组
+      axios.put('/orders/checkFinish', {
+        ids: state.multipleSelection.map(i => i.orderId)
+      }).then(() => {
+        ElMessage.success('确认完成')
+        getOrderList()
+      })
+    }
+
     // 获取后端订单列表
     const getOrderList = () => {
       state.loading = true
@@ -284,19 +303,25 @@ export default {
       })
     }
 
+    // watch(state.tableData, filteredTableData);
+
+
+
     const changePage = (val) => {
       state.currentPage = val
       getOrderList()
     }
-    const filteredTableData = computed(() => {
-      state.tableData = this.tableData.values.filter(record => record.isDeleted !== 1);
-    });
+
+    // const filteredTableData=computed(() => {
+    //   // state.tableData = this.tableData.values.filter(record => record.isDeleted === 0);
+    //   return state.tableData.values.filter(record => record.isDeleted === 0);
+    //   // state.tableData = this.tableData.map()
+    // });
 
     return {
       ...toRefs(state),
       getOrderList,
       changePage,
-      filteredTableData,
       searchData,
       search,
       handleDelete,
@@ -304,6 +329,7 @@ export default {
       handleCheckDone,
       handleCheckClose,
       handleCheckOut,
+      handleCheckFinish,
       // handleNext
     }
   }
