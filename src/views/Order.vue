@@ -125,7 +125,6 @@
           label="其他信息"
           width="110">
         <template v-slot="{row}">
-
           <el-button type="info" round @click="handleEdit(row.orderId)">查看详情</el-button>
         </template>
       </el-table-column>
