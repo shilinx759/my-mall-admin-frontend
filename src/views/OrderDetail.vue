@@ -165,6 +165,7 @@ export default {
           orderStatus: orderInfo.value.orderStatus,
           orderStatusString: orderStatusString.value,
           createTime: orderInfo.value.createTime,
+          newBeeMallOrderItemVOS:itemList.value,
           orderAddressVO:orderAddressVO.value
       }).then(res=>{
         console.log("修改完成")
