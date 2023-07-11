@@ -4,7 +4,7 @@
       <div class="head">
         <img class="logo" src="@/assets/shop.png" />
         <div class="name">
-          <div class="title">华为商城</div>
+          <div class="title">吉吉国王商城</div>
           <div class="tips">后台管理系统</div>
         </div>
       </div>

@@ -55,7 +55,7 @@
         @selection-change="handleSelectionChange">
       <el-table-column
           type="selection"
-          width="55"
+          width="40"
       >
       </el-table-column>
       <el-table-column
@@ -66,7 +66,7 @@
       <el-table-column
           prop="orderNo"
           label="订单号"
-          width="200">
+          width="180">
       </el-table-column>
       <el-table-column
           prop="userId"
@@ -123,9 +123,9 @@
       </el-table-column>
       <el-table-column
           label="其他信息"
-          width="110">
+          width="120">
         <template v-slot="{row}">
-          <el-button type="info" round @click="handleEdit(row.orderId)">查看详情</el-button>
+          <el-button type="info" style="size: letter"  @click="handleEdit(row.orderId)">查看详情</el-button>
         </template>
       </el-table-column>
       <el-table-column

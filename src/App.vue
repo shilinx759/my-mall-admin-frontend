@@ -5,7 +5,7 @@
         <div class="head">
           <div>
             <img src="@/assets/shop.png" alt="logo">
-            <span>华为商城</span>
+            <span>吉吉囯王</span>
           </div>
         </div>
         <div class="line" />

@@ -17,11 +17,20 @@
       <el-form-item label="订单状态">
         <el-input v-model="orderStatusString" disabled />
       </el-form-item>
-      <el-form-item label="用户姓名">
-        <el-input v-model="orderAddressInfo.userName"  />
-      </el-form-item>
-      <el-form-item label="地址">
-        <el-input v-model="userAddress" disabled/>
+<!--      <el-form-item label="用户姓名">-->
+<!--        <el-input v-model="orderAddressInfo.userName"  />-->
+<!--      </el-form-item>-->
+      <el-form-item label="地址信息">
+        <el-input v-model="userName" placeholder="请输入姓名"></el-input>
+        <el-input v-model="userPhone" placeholder="请输入手机号"></el-input>
+        <el-cascader
+            @change="handleChange"
+            v-model="selectedRegion"
+            :options="regions"
+            :props="cascaderProps"
+            placeholder="请选择地区"
+        ></el-cascader>
+        <el-input v-model="detailAddress" placeholder="请输入详细地址"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-check" @click="editDetail">提交修改</el-button>
@@ -67,6 +76,62 @@ export default {
     const userAddress = ref("");
     const orderId = ref(0);
     const orderInfo = ref({});
+    const orderAddressVO = ref({});
+
+    //地区选择
+    const selectedRegion = ref([]);
+    function handleChange(value) {
+      console.log('Selected region:', value);
+    }
+    const cascaderProps = {
+      value: 'code',
+      label: 'name',
+      children: 'children'
+    };
+    const userName = ref('');
+    const userPhone = ref('');
+    const detailAddress = ref('');
+    const regions = [
+      {
+        code: '110000',
+        name: '北京市',
+        children: [
+          { code: '110100', name: '东城区'},
+          { code: '110200', name: '县' }
+        ]
+      },
+      {
+        code: '120000',
+        name: '天津市',
+        children: [
+          { code: '120100', name: '某某市辖区' },
+          { code: '120200', name: '县'}
+        ]
+      },
+      {
+        code: '130000',
+        name: '河北省',
+        children: [
+          {
+            code: '130100',
+            name: '石家庄市',
+            children: [
+              { code: '130102', name: '长安区' },
+              { code: '130104', name: '桥西区'}
+            ]
+          },
+          {
+            code: '130200',
+            name: '唐山市',
+            children: [
+              { code: '130202', name: '路南区'},
+              { code: '130204', name: '古冶区'}
+            ]
+          }
+        ]
+      }
+      // 其他省市区数据...
+    ];
 
     const  state=reactive({
       orderNo1: "",
@@ -80,6 +145,17 @@ export default {
 
     const editDetail=()=>{//点击表单提交按钮，传递对应参数对象
       state.loading = true;
+      orderAddressVO.value = {
+        orderId: orderId.value,
+        userName: userName.value,
+        userPhone: userPhone.value,
+        provinceName: regions.find(region => region.code === selectedRegion.value[0])?.name,
+        cityName: regions.find(region => region.code === selectedRegion.value[0])?.children.find(city => city.code === selectedRegion.value[1])?.name,
+        regionName: regions.find(region => region.code === selectedRegion.value[0])?.children.find(city => city.code === selectedRegion.value[1])?.children.find(region => region.code === selectedRegion.value[2])?.name,
+        detailAddress: detailAddress.value
+      };
+      console.log("地址对象： "+orderAddressVO.toString())
+
       axios.put(`/orders/updateDetail`,{
           orderId:orderId.value,
           orderNo: orderNo.value,
@@ -89,8 +165,7 @@ export default {
           orderStatus: orderInfo.value.orderStatus,
           orderStatusString: orderStatusString.value,
           createTime: orderInfo.value.createTime,
-          // newBeeMallOrderItemVOS:itemList.value,//不懂拿不拿得了
-          orderAddressVO:orderAddressInfo.value
+          orderAddressVO:orderAddressVO.value
       }).then(res=>{
         console.log("修改完成")
         ElMessage.success("修改完成")
@@ -129,11 +204,11 @@ export default {
              payTypeString.value = res.payTypeString;
              payTime.value = res.payTime;
              createTime.value = res.createTime;
-             orderAddressInfo.value = res.orderAddressVO
-             userAddress.value = orderAddressInfo.value.provinceName
-                     + orderAddressInfo.value.cityName
-                     + orderAddressInfo.value.regionName
-                     + orderAddressInfo.value.detailAddress;
+             // orderAddressInfo.value = res.orderAddressVO
+             userName.value=res.orderAddressVO.userName
+             detailAddress.value=res.orderAddressVO.detailAddress
+             userPhone.value=res.orderAddressVO.userPhone
+
              itemList.value = res.newBeeMallOrderItemVOS;
              state.loading = false;
        });
@@ -155,7 +230,15 @@ export default {
       orderId,
       orderInfo,
       editDetail,
-      deleteItem
+      deleteItem,
+      selectedRegion,
+      regions,
+      cascaderProps,
+      userName,
+      userPhone,
+      detailAddress,
+      handleChange,
+      orderAddressVO
     };
   },
 };
