@@ -1,40 +1,51 @@
 <template>
   <el-card class="category-container">
     <el-form
+
         label-position="left"
         label-width="100px"
-        style="max-width: 460px"
+        style="max-width: 460px;position: center;padding-left: 200px"
     >
-      <el-form-item label="订单号">
-        <el-input v-model="orderNo" />
-      </el-form-item>
-      <el-form-item label="订单总额">
-        <el-input v-model="totalPrice" disabled/>
-      </el-form-item>
-      <el-form-item label="支付方式">
-        <el-input v-model="payTypeString" disabled />
-      </el-form-item>
-      <el-form-item label="订单状态">
-        <el-input v-model="orderStatusString" disabled />
-      </el-form-item>
-<!--      <el-form-item label="用户姓名">-->
-<!--        <el-input v-model="orderAddressInfo.userName"  />-->
-<!--      </el-form-item>-->
-      <el-form-item label="地址信息">
-        <el-input v-model="userName" placeholder="请输入姓名"></el-input>
-        <el-input v-model="userPhone" placeholder="请输入手机号"></el-input>
-        <el-cascader
-            @change="handleChange"
-            v-model="selectedRegion"
-            :options="regions"
-            :props="cascaderProps"
-            placeholder="请选择地区"
-        ></el-cascader>
-        <el-input v-model="detailAddress" placeholder="请输入详细地址"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-check" @click="editDetail">提交修改</el-button>
-      </el-form-item>
+
+
+          <el-form-item label="订单号">
+            <el-input v-model="orderNo" />
+          </el-form-item>
+          <el-form-item label="订单总额">
+            <el-input v-model="totalPrice" disabled/>
+          </el-form-item>
+          <el-form-item label="支付方式">
+            <el-input v-model="payTypeString" disabled />
+          </el-form-item>
+          <el-form-item label="订单状态">
+            <el-input v-model="orderStatusString" disabled />
+          </el-form-item>
+        <el-form-item label="地址信息">
+          <el-input v-model="userAddress" disabled />
+        </el-form-item>
+
+
+          <el-form-item label="修改地址信息">
+            <el-input  class="address-item" v-model="userName" placeholder="请输入姓名"></el-input>
+            <el-divider></el-divider>
+            <el-input  class="address-item" v-model="userPhone" placeholder="请输入手机号"></el-input>
+            <el-cascader
+                class="address-item"
+                @change="handleChange"
+                v-model="selectedRegion"
+                :options="regions"
+                :props="cascaderProps"
+                :aria-placeholder="userAddress"
+            ></el-cascader>
+            <el-divider></el-divider>
+            <el-input  class="address-item" v-model="detailAddress" placeholder="请输入详细地址"></el-input>
+          </el-form-item>
+
+
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-check" @click="editDetail">提交修改</el-button>
+        </el-form-item>
+
     </el-form>
 
     <el-table :data="itemList" v-loading="loading" :height="200" border>
@@ -94,18 +105,22 @@ export default {
     const regions = [
       {
         code: '110000',
-        name: '北京市',
+        name: '湖南省',
         children: [
-          { code: '110100', name: '东城区'},
-          { code: '110200', name: '县' }
-        ]
-      },
-      {
-        code: '120000',
-        name: '天津市',
-        children: [
-          { code: '120100', name: '某某市辖区' },
-          { code: '120200', name: '县'}
+          { code: '110100',
+            name: '长沙市',
+            children: [
+              { code: '130102', name: 'XX1区' },
+              { code: '130104', name: 'xx2区'}
+            ]
+          },
+          { code: '110200',
+            name: '永州市' ,
+            children: [
+              { code: '130102', name: '零陵区' },
+              { code: '130104', name: 'xxx区'}
+            ]
+          }
         ]
       },
       {
@@ -129,6 +144,36 @@ export default {
             ]
           }
         ]
+      },
+      {
+        code: '140000',
+        name: '广西壮族自治区',
+        children: [
+          {
+            code: '140100',
+            name: '柳州市',
+            children: [
+              { code: '140102', name: '柳南区' },
+              { code: '140104', name: '柳北区'}
+            ]
+          },
+          {
+            code: '140200',
+            name: '南宁',
+            children: [
+              { code: '140202', name: '某某区'},
+              { code: '140204', name: '某某2区'}
+            ]
+          },
+          {
+            code: '140300',
+            name: '桂林',
+            children: [
+              { code: '140302', name: '雁山区'},
+              { code: '140304', name: '七星区'}
+            ]
+          }
+        ]
       }
       // 其他省市区数据...
     ];
@@ -136,7 +181,9 @@ export default {
     const  state=reactive({
       orderNo1: "",
       loading:false,
-      result : {}
+      result : {},
+      error:"",
+      success: {}
     })
 
     onMounted(  () => {
@@ -170,9 +217,17 @@ export default {
       }).then(res=>{
         console.log("修改完成")
         ElMessage.success("修改完成")
-        getDetail(orderId.value)
-        state.loading = false;
+        state.success = res;
+        // getDetail(orderId.value)
+        // state.loading = false;
+      }).catch(error=>{
+        state.error=error.message
+        console.log("返回的状态码失败状态码："+error.resultCode)
       })
+      if (state.success !== null) {
+        getDetail(orderId.value)
+      }
+      state.loading = false;
     }
 
     const deleteItem = (orderItemId) => {
@@ -205,6 +260,10 @@ export default {
              payTypeString.value = res.payTypeString;
              payTime.value = res.payTime;
              createTime.value = res.createTime;
+             userAddress.value = res.orderAddressVO.provinceName
+                 + res.orderAddressVO.cityName
+                 + res.orderAddressVO.regionName
+                 + res.orderAddressVO.detailAddress;
              // orderAddressInfo.value = res.orderAddressVO
              userName.value=res.orderAddressVO.userName
              detailAddress.value=res.orderAddressVO.detailAddress
@@ -252,14 +311,11 @@ export default {
   min-height: 100%;
 }
 
-.el-descriptions {
-  margin-top: 20px;
+el-cascader{
+  margin-bottom: 10px;
 }
-.cell-item {
-  display: flex;
-  align-items: center;
-}
-.margin-top {
-  margin-top: 20px;
+
+.address-item  {
+  margin-bottom: 10px;
 }
 </style>
